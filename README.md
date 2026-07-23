@@ -98,24 +98,6 @@ curl -X POST http://127.0.0.1:8000/analyze \
   -d '{"text": "Breaking: Scientists discover that water is wet."}'
 ```
 
-## Project Structure
-
-```
-fake-new-detector/
-├── data/                         # Data artifacts
-├── logs/                         # Reports and metrics
-├── models/                       # Trained model checkpoints
-├── tests/                        # Tests
-├── src/
-│   ├── data/                     # Hydration, splitting, preprocessing
-│   ├── models/                   # TF-IDF baseline + DistilBERT
-│   ├── explain/                  # SHAP explainability
-│   ├── api/                      # FastAPI backend
-│   └── evaluation/               # Metrics computation
-├── extension/                    # Chrome Extension (Manifest V3)
-├── requirements.txt
-└── README.md
-```
 
 ## Constraints (by design)
 
