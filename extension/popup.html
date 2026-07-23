@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector</title>
+    <link rel="stylesheet" href="popup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header id="app-header">
+            <div class="logo-row">
+                <div class="logo-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div>
+                    <h1>Fake News Detector</h1>
+                    <p class="subtitle">Credibility Analysis</p>
+                </div>
+            </div>
+            <div class="status-badge" id="api-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Checking…</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- Initial State -->
+            <div id="initial-state" class="state-panel">
+                <div class="prompt-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#grad1)" stroke-width="1.5">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6C63FF" />
+                                <stop offset="100%" style="stop-color:#4ECDC4" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                </div>
+                <p class="prompt-text">Ready to analyze the current article for credibility signals.</p>
+                <button id="analyze-btn" class="btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    Analyze Article
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="state-panel hidden">
+                <div class="loader-ring">
+                    <div class="ring-segment"></div>
+                    <div class="ring-segment"></div>
+                    <div class="ring-segment"></div>
+                </div>
+                <p class="loading-text">Analyzing article with AI…</p>
+                <p class="loading-sub">Running model inference & SHAP explanation</p>
+            </div>
+
+            <!-- Result State -->
+            <div id="result-state" class="state-panel hidden">
+                <!-- Confidence Score Ring -->
+                <div class="score-section">
+                    <div class="confidence-ring" id="confidence-ring">
+                        <svg viewBox="0 0 120 120" class="ring-svg">
+                            <circle class="ring-bg" cx="60" cy="60" r="52" />
+                            <circle class="ring-progress" id="ring-progress" cx="60" cy="60" r="52" />
+                        </svg>
+                        <div class="ring-content">
+                            <span class="score-value" id="score-value">0%</span>
+                            <span class="score-label" id="score-label">confidence</span>
+                        </div>
+                    </div>
+                    <h2 class="verdict" id="verdict">Analyzing…</h2>
+                    <p class="verdict-detail" id="verdict-detail"></p>
+                </div>
+
+                <!-- Machine Evaluation Paragraph -->
+                <div class="machine-evaluation" id="machine-evaluation-section">
+                    <h3 class="section-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                        Machine Evaluation
+                    </h3>
+                    <p id="machine-evaluation-text"></p>
+                </div>
+
+                <!-- SHAP Explanation -->
+                <div class="explanation-section" id="explanation-section">
+                    <h3 class="section-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        Key Influential Passages
+                    </h3>
+                    <ul class="sentence-list" id="sentence-list"></ul>
+                </div>
+
+                <!-- Model Info -->
+                <div class="model-info" id="model-info"></div>
+
+                <!-- Disclaimer -->
+                <div class="disclaimer" id="disclaimer">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <span></span>
+                </div>
+
+                <button id="reset-btn" class="btn-secondary">Scan Another Article</button>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="state-panel hidden">
+                <div class="error-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="15" y1="9" x2="9" y2="15" />
+                        <line x1="9" y1="9" x2="15" y2="15" />
+                    </svg>
+                </div>
+                <p class="error-text" id="error-text">Something went wrong.</p>
+                <button id="retry-btn" class="btn-secondary">Try Again</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+{
+  "total_articles": 62720,
+  "gossipcop_count": 0,
+  "politifact_count": 0,
+  "split_ratios": "0.7/0.15/0.15",
+  "strategy_used": "stratified_random_all_data",
+  "date_coverage_pct": null,
+  "class_distributions": {
+    "train": {
+      "count": 43903,
+      "labels": {
+        "real": 24327,
+        "fake": 19576
+      }
+    },
+    "val": {
+      "count": 9408,
+      "labels": {
+        "real": 5213,
+        "fake": 4195
+      }
+    },
+    "test": {
+      "count": 9409,
+      "labels": {
+        "real": 5213,
+        "fake": 4196
+      }
+    },
+    "ood_test": {
+      "count": 0,
+      "labels": {}
+    }
+  }
+}

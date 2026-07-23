@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-05-26T22:08:01.784079+00:00",
+  "model": "TF-IDF + Logistic Regression (v2)",
+  "config": {
+    "max_features": 100000,
+    "ngram_range": "(1, 2)",
+    "sublinear_tf": true,
+    "best_C": 10.0,
+    "cv_folds": 5,
+    "class_weight": "balanced"
+  },
+  "results": {
+    "val": {
+      "accuracy": 0.9533,
+      "f1": 0.9534
+    },
+    "test": {
+      "accuracy": 0.9487,
+      "f1": 0.9487
+    }
+  }
+}

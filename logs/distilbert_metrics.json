@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-05-27T18:41:08.614590+00:00",
+  "model": "distilbert-base-uncased (fine-tuned v2)",
+  "config": {
+    "epochs": 3,
+    "learning_rate": 2e-05,
+    "batch_size": 16,
+    "gradient_accumulation": 1,
+    "effective_batch_size": 16,
+    "label_smoothing": 0.1,
+    "early_stopping_patience": 1,
+    "max_token_length": 256,
+    "fp16": true
+  },
+  "results": {
+    "test": {
+      "accuracy": 0.9888,
+      "f1": 0.9888
+    }
+  }
+}

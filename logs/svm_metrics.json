@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-05-27T13:43:53.539725+00:00",
+  "model": "TF-IDF + Linear SVM (CalibratedClassifierCV)",
+  "config": {
+    "max_features": 100000,
+    "ngram_range": "(1, 2)",
+    "sublinear_tf": true,
+    "best_C": 1.0,
+    "cv_folds": 5,
+    "class_weight": "balanced",
+    "calibration": "sigmoid (5-fold)"
+  },
+  "results": {
+    "val": {
+      "accuracy": 0.9546,
+      "f1": 0.9546
+    },
+    "test": {
+      "accuracy": 0.9512,
+      "f1": 0.9512
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-05-26T22:00:33.777679+00:00",
+  "total_articles": 62720,
+  "real_count": 34753,
+  "fake_count": 27967,
+  "imbalance_ratio": 0.5541,
+  "sources": {
+    "welFake": 62720
+  },
+  "welFake_csv_used": "C:\\Users\\Vivobook\\fake-new-detector\\data\\raw\\welFake\\WELFake_Dataset.csv"
+}

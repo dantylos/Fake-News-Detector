@@ -1,0 +1,144 @@
+========================================================================
+  SHAP Explainability Summary
+  Daniil Khmelnytskyi — PRA3017-N
+========================================================================
+
+METHODOLOGY NOTE
+------------------------------------------------------------------------
+Raw transformer attention weights are deliberately NOT used.
+Instead, two SHAP methods provide model-agnostic attributions:
+  1. LinearExplainer (TF-IDF baseline) — exact Shapley values.
+  2. KernelExplainer (DistilBERT) — sentence-level mask perturbations.
+Both satisfy efficiency, symmetry, dummy, and linearity axioms
+of cooperative game theory (Lundberg & Lee, 2017).
+
+════════════════════════════════════════════════════════════════════════
+  PART 1 — TF-IDF Baseline: Top Feature Importances
+════════════════════════════════════════════════════════════════════════
+
+Rank  Feature                                Mean |SHAP|  Direction
+--------------------------------------------------------------------
+1     president                                  0.00570  → REAL
+2     said                                       0.00500  → REAL
+3     her                                        0.00471  → FAKE
+4     she                                        0.00421  → REAL
+5     house                                      0.00403  → REAL
+6     he                                         0.00388  → REAL
+7     any                                        0.00359  → REAL
+8     american                                   0.00351  → REAL
+9     of his                                     0.00343  → FAKE
+10    he is                                      0.00327  → REAL
+11    our                                        0.00324  → REAL
+12    within                                     0.00314  → FAKE
+13    inside                                     0.00302  → REAL
+14    make                                       0.00294  → FAKE
+15    said the                                   0.00268  → REAL
+16    most                                       0.00266  → REAL
+17    gun                                        0.00264  → REAL
+18    day                                        0.00262  → REAL
+19    this is                                    0.00256  → REAL
+20    will                                       0.00254  → REAL
+
+════════════════════════════════════════════════════════════════════════
+  PART 2 — DistilBERT: Sentence-Level SHAP Values
+════════════════════════════════════════════════════════════════════════
+(Positive SHAP → sentence increases P(fake))
+
+[Article 1]  technicolor highway is moving on without xavier hughes ( ruffin prentiss ) and megan morri…
+  Sent        SHAP  Signal   Sentence (≤100 chars)
+  ----------------------------------------------------------------------
+  1        +0.0000  [  neut]  technicolor highway is moving on without xavier hughes ( ruffin prentiss ) and megan morrison ( chri…
+  2        +0.0000  [  neut]  but it ’ s not long before … from e!
+  3        +0.0000  [  neut]  online ( us ) – top stories https : / / ift.
+
+[Article 2]  when hgtv ' s " fixer upper " first aired in 2013, the show became an instant hit. four ye…
+  Sent        SHAP  Signal   Sentence (≤100 chars)
+  ----------------------------------------------------------------------
+  1        +0.0000  [  neut]  when hgtv ' s " fixer upper " first aired in 2013, the show became an instant hit.
+  2        +0.0000  [  neut]  four years later, " fixer upper " stars chip and joanna gaines have transformed dozens of rundown pr…
+  3        +0.0000  [  neut]  as the gaineses film the fifth season of their show, we decided to take a look back at some of the m…
+  4        +0.0000  [  neut]  check out the stunning before - and - after photos of the 10 best house flips yet : cameron and jess…
+  5        +0.0000  [  neut]  the one - bedroom property in waco, texas, is listed with briggs freeman for $ 950, 000. the open - …
+  6        +0.0000  [  neut]  check out more photos inside " the shotgun house. "
+  7        +0.0000  [  neut]  todd and lexia meek bought the " barndominium " for $ 180, 00, hoping to raise their three kids in t…
+  8        +0.0000  [  neut]  the renovated, five - bedroom barndominium is now being sold for $ 1.
+  9        +0.0000  [  neut]  check out more photos inside the modern " barndominium. "
+  10       +0.0000  [  neut]  sterling and casey zan inherited a 2, 000 - acre ranch from sterling ' s grandfather, " paw paw. "
+  11       +0.0000  [  neut]  after he passed away, the house was abandoned for almost ten years.
+  12       +0.0000  [  neut]  check out more photos inside " paw paw ' s house. "
+  13       +0.0000  [  neut]  noah and jessica dansby wanted a spacious home that could comfortably fit their three sons.
+  14       +0.0000  [  neut]  despite its ideal location, the " nut house " had been on the market for over two years, due in part…
+  15       +0.0000  [  neut]  check out more photos inside the " nut house. "
+  16       +0.0000  [  neut]  almost empty nesters, the newlywed couple wanted a spacious, relaxing home where their seven kids co…
+  17       +0.0000  [  neut]  check out more photos inside " the house on the river. "
+  18       +0.0000  [  neut]  along with her mother yanett and her son julian, angela silva moved to texas to pursue her dream job…
+  19       +0.0000  [  neut]  the family wanted a spacious, country - style home with a " modern edge. "
+  20       +0.0000  [  neut]  check out more photos inside " the raggedy ranch. "
+  21       +0.0000  [  neut]  when whitney and martin gaspar appeared on " fixer upper, " whitney was pregnant with her second son…
+  22       +0.0000  [  neut]  the two bought " the ranch on the hill " for $ 196, 000. when whitney went into
+
+[Article 3]  by zoe haylock less than a month after premiering at sundance, netflix ' s highly - antici…
+  Sent        SHAP  Signal   Sentence (≤100 chars)
+  ----------------------------------------------------------------------
+  1        +0.0000  [  neut]  by zoe haylock less than a month after premiering at sundance, netflix ' s highly - anticipated glor…
+  2        +0.0000  [  neut]  also coming to netflix this month is duncan jones ' mute, starring alexander skarsgard, paul rudd an…
+  3        +0.0000  [  neut]  additionally, fan - favorite library titles like american pie, goodfellas, kill bill : vols.
+  4        +0.0000  [  neut]  1 and 2, lincoln, meet the parents, men in black, t he hurt locker and the ocean ' s trilogy will st…
+  5        +0.0000  [  neut]  february ' s lineup is full of comedians and their new shows or specials.
+  6        +0.0000  [  neut]  the joel mchale show with joel mchale, marlon wayans : woke - ish, my next guest needs no introducti…
+  7        +0.0000  [  neut]  tv series with new seasons hitting the streaming service include netflix originals altered carbon, e…
+  8        +0.0000  [  neut]  missed last month?
+  9        +0.0000  [  neut]  see netflix ’ s january 2018 releases here.
+  10       +0.0000  [  neut]  take a look below at the complete list of february movie and tv additions.
+  11       +0.0000  [  neut]  3000 miles to graceland 42 grams aeon flux american pie american pie 2 american pie presents : band …
+  12       +0.0000  [  neut]  1 kill bill : vol.
+  13       +0.0000  [  neut]  2 lara croft : tomb raider liberated : the new sexual revolution lovesick meet the fockers meet the …
+  14       +0.0000  [  neut]  luna petunia : return to amazia : season 1 on body and soul fred armisen : standup for drummers valo…
+
+[Article 4]  mayadin, syria - abu bakr al - baghdadi, the leader of the islamic state, released a state…
+  Sent        SHAP  Signal   Sentence (≤100 chars)
+  ----------------------------------------------------------------------
+  1        +0.0000  [  neut]  mayadin, syria - abu bakr al - baghdadi, the leader of the islamic state, released a statement wedne…
+  2        +0.0000  [  neut]  the powerful statement which single - handedly dismantled isis came shortly after a terrorist attack…
+  3        +0.0000  [  neut]  despite my previous belief that we must slay the infidel in the name of allah until islam rules the …
+  4        +0.0000  [  neut]  it is time for the mujahideen to start uniting and loving on people. "
+  5        +0.0000  [  neut]  " i just can ' t believe we didn ' t see it before.
+  6        +0.0000  [  neut]  it ' s all so clear now, " he added.
+  7        +0.0000  [  neut]  after the video started to go viral in isis cave networks and strongholds, thousands of terrorists b…
+  8        +0.0000  [  neut]  according to reports, al - baghdadi further confirmed that a recent in which kendall jenner offered …
+  9        +0.0000  [  neut]  © 2026 babylon bee.
+
+[Article 5]  together or not, rob kardashian has a lot of love for blac chyna! the 30 - year - old real…
+  Sent        SHAP  Signal   Sentence (≤100 chars)
+  ----------------------------------------------------------------------
+  1        +0.0000  [  neut]  together or not, rob kardashian has a lot of love for blac chyna!
+  2        +0.0000  [  neut]  the 30 - year - old reality star took to instagram on sunday to honor his baby mama on mother ’ s da…
+  3        +0.0000  [  neut]  after sharing a sweet post to his own mom, kris jenner, kardashian posted a throwback video of chyna…
+  4        +0.0000  [  neut]  the clip followed chyna ’ s pregnancy and the birth of kardashian ’ s daughter, dream.
+  5        +0.0000  [  neut]  more : blac chyna goes glam for friend ' s wedding - - see the chic pics!
+  6        +0.0000  [  neut]  “ and happy mama ' s day to the mother of my only child @ blacchyna : ) i am so thankful for our bea…
+  7        +0.0000  [  neut]  the on - again, off - again pair appeared to spend the holiday apart.
+  8        +0.0000  [  neut]  rob visited his sisters earlier in the day where they all cuddled with baby dream on snapchat, posti…
+  9        +0.0000  [  neut]  dream then reunited with her mom and brother, king cairo, later in the day for some mother ’ s day s…
+  10       +0.0000  [  neut]  chyna documented her special day on snapchat, posting photos and videos with her two children.
+  11       +0.0000  [  neut]  “ happy mother ’ s day, dreamy, ” she said in one clip, kissing her smiling daughter on the cheek.
+  12       +0.0000  [  neut]  she also shared a bouquet of roses and orchids, captioning it with a clover emoji – a symbol she oft…
+  13       +0.0000  [  neut]  related : rob kardashian wishes blac chyna a happy birthday on instagram after skipping her party ch…
+  14       +0.0000  [  neut]  the status of rob and chyna ’ s relationship remains unclear.
+  15       +0.0000  [  neut]  they haven ’ t been spotted together since late april, and rob did not appear to be present for chyn…
+  16       +0.0000  [  neut]  for more from the couple, watch the clip below!
+
+[Article 6]  ryan is quite simply one of the most influential, well - regarded, and well - known names …
+  Sent        SHAP  Signal   Sentence (≤100 chars)
+  ----------------------------------------------------------------------
+  1        +0.0000  [  neut]  ryan is quite simply one of the most influential, well - regarded, and well - known names in hollywo…
+  2        +0.0000  [  neut]  he is the quintessential hollywood insider who... full bio shawn mendes kicked off his career by ope…
+  3        +0.0000  [  neut]  she told me not to be afraid to go out on stage, " mendes told vman magazine ' s issue 38.
+  4        +0.0000  [  neut]  “ because everyone in the stadium came to have fun.
+  5        +0.0000  [  neut]  this is not a judging contest, this is a concert. "
+  6        +0.0000  [  neut]  mendes added that he ’ s also learned to live in the moment. "
+  7        +0.0000  [  neut]  any of this could be gone tomorrow, " he told the magazine. "
+  8        +0.0000  [  neut]  that ' s why you ' ve got to make the most of it today.
+  9        +0.0000  [  neut]  people say to me, ' what are you going to be doing in five years? '
+  10       +0.0000  [  neut]  the thing is, i don ' t care!
+  11       +0.0000  [  neut]  it ' s what i ' m doing today that matters. "
