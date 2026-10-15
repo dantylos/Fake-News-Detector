@@ -41,6 +41,7 @@ MAX_TOKEN_LENGTH    = 512
 SHAP_BASELINE_ROWS  = 50
 SHAP_SAMPLE_SIZE    = 6
 SHAP_N_SAMPLES      = 64
+SHAP_MAX_SENTENCES  = 12
 SHAP_TOP_FEATURES   = 20
 SHAP_TOP_SENTENCES  = 5
 
@@ -91,11 +92,58 @@ def _load_distilbert():
     try:
         tokenizer = AutoTokenizer.from_pretrained(str(TRANSFORMER_PATH))
         model = AutoModelForSequenceClassification.from_pretrained(str(TRANSFORMER_PATH))
+        if torch.cuda.is_available():
+            model = model.to("cuda")
         model.eval()
         return model, tokenizer
     except Exception as exc:
         log.error(f"Could not load DistilBERT: {exc}")
         return None, None
+
+
+def _predict_p_fake(model, tokenizer, text: str) -> float:
+    """Returns P(fake) for a single text, on the model's device."""
+    enc = tokenizer(
+        text, return_tensors="pt", truncation=True,
+        padding=True, max_length=MAX_TOKEN_LENGTH,
+    )
+    enc.pop("token_type_ids", None)
+    device = next(model.parameters()).device
+    enc = {k: v.to(device) for k, v in enc.items()}
+    with torch.no_grad():
+        logits = model(**enc).logits
+    return float(torch.softmax(logits, dim=-1)[0, 1].detach().cpu())
+
+
+def _sentence_kernel_shap(model, tokenizer, sentences: list[str]) -> np.ndarray:
+    """
+    Sentence-level Kernel SHAP for P(fake).
+
+    The background is an empty article (all sentences off). The instance
+    being explained is the full article (all sentences on). Using the
+    full article as both background and query yields all-zero SHAP values.
+    """
+    n = len(sentences)
+
+    def predict_fn(mask_matrix: np.ndarray) -> np.ndarray:
+        outputs = []
+        for mask in np.atleast_2d(np.asarray(mask_matrix)):
+            active = [s for s, m in zip(sentences, mask) if float(m) > 0.5]
+            text_in = " ".join(active) if active else "no content"
+            outputs.append(_predict_p_fake(model, tokenizer, text_in))
+        return np.asarray(outputs, dtype=float).reshape(-1, 1)
+
+    background = np.zeros((1, n))
+    query = np.ones((1, n))
+    n_samples = max(2 * n + 8, min(SHAP_N_SAMPLES, 4 * n + 16))
+    explainer = shap.KernelExplainer(predict_fn, background)
+    sv = explainer.shap_values(query, nsamples=n_samples, silent=True)
+    if isinstance(sv, list):
+        sv = sv[0]
+    sv = np.asarray(sv, dtype=float).reshape(-1)
+    if sv.size != n:
+        raise ValueError(f"SHAP length mismatch ({sv.size} vs {n})")
+    return sv
 
 
 # SHAP -- TF-IDF LinearExplainer
