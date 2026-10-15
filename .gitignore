@@ -1,1 +1,4 @@
 models/distilbert/model.safetensors
+.venv/
+__pycache__/
+*.py[cod]
