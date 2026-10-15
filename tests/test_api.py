@@ -96,12 +96,17 @@ class TestAnalyzeValid:
         """Each SHAP entry should have sentence + shap_value fields."""
         data = client.post("/analyze", json={"text": FAKE_ARTICLE}).json()
         sentences = data["explanation"]["top_sentences"]
-        if sentences:
-            for item in sentences:
-                assert "sentence" in item
-                assert "shap_value" in item
-                assert isinstance(item["sentence"], str)
-                assert isinstance(item["shap_value"], (int, float))
+        assert sentences
+        for item in sentences:
+            assert "sentence" in item
+            assert "shap_value" in item
+            assert isinstance(item["sentence"], str)
+            assert isinstance(item["shap_value"], (int, float))
+
+    def test_analyze_shap_values_not_all_zero(self, client):
+        top = client.post("/analyze", json={"text": FAKE_ARTICLE}).json()["explanation"]["top_sentences"]
+        assert top, "explanation is empty"
+        assert any(abs(s["shap_value"]) > 1e-4 for s in top)
 
     def test_analyze_model_version_present(self, client):
         data = client.post("/analyze", json={"text": FAKE_ARTICLE}).json()
@@ -188,13 +193,13 @@ class TestHistory:
         """After analyzing, history should contain expected fields."""
         client.post("/analyze", json={"text": FAKE_ARTICLE})
         data = client.get("/history?limit=1").json()
-        if data:
-            record = data[0]
-            expected_keys = {
-                "text_preview", "prediction", "confidence",
-                "model_used", "timestamp",
-            }
-            assert expected_keys.issubset(set(record.keys()))
+        assert data
+        record = data[0]
+        expected_keys = {
+            "text_preview", "prediction", "confidence",
+            "model_used", "timestamp",
+        }
+        assert expected_keys.issubset(set(record.keys()))
 
     def test_history_prediction_values(self, client):
         data = client.get("/history").json()

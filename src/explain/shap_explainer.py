@@ -207,36 +207,11 @@ def explain_transformer_shap(
             log.warning(f"Article {row_idx}: <2 sentences -- skipping SHAP.")
             continue
 
+        sentences = sentences[:SHAP_MAX_SENTENCES]
         n = len(sentences)
 
-        def _make_predict_fn(sents):
-            def predict_fn(mask_matrix: np.ndarray) -> np.ndarray:
-                outputs = []
-                for mask in mask_matrix:
-                    active = [s for s, m in zip(sents, mask) if m > 0.5]
-                    text_in = " ".join(active) if active else "no content"
-                    enc = tokenizer(
-                        text_in, return_tensors="pt", truncation=True,
-                        padding=True, max_length=MAX_TOKEN_LENGTH,
-                    )
-                    with torch.no_grad():
-                        logits = model(**enc).logits
-                    p_fake = torch.softmax(logits, dim=-1).numpy()[0, 1]
-                    outputs.append(float(p_fake))
-                return np.array(outputs).reshape(-1, 1)
-            return predict_fn
-
-        predict_fn = _make_predict_fn(sentences)
-        background = np.ones((1, n))
-        query      = np.ones((1, n))
-
         try:
-            explainer = shap.KernelExplainer(predict_fn, background)
-            sv = explainer.shap_values(query, nsamples=SHAP_N_SAMPLES, silent=True)
-
-            if isinstance(sv, list):
-                sv = sv[0]
-            sv = np.array(sv).flatten()
+            sv = _sentence_kernel_shap(model, tokenizer, sentences)
 
             if len(sv) != n:
                 log.warning(f"  SHAP length mismatch ({len(sv)} vs {n}) -- skipping.")
@@ -274,32 +249,10 @@ def explain_article(
         if model is None:
             return {"top_sentences": []}
 
+        sentences = sentences[:SHAP_MAX_SENTENCES]
         n = len(sentences)
-
-        def predict_fn(mask_matrix: np.ndarray) -> np.ndarray:
-            outputs = []
-            for mask in mask_matrix:
-                active = [s for s, m in zip(sentences, mask) if m > 0.5]
-                text_in = " ".join(active) if active else "no content"
-                enc = tokenizer(
-                    text_in, return_tensors="pt", truncation=True,
-                    padding=True, max_length=MAX_TOKEN_LENGTH,
-                )
-                with torch.no_grad():
-                    logits = model(**enc).logits
-                p_fake = torch.softmax(logits, dim=-1).numpy()[0, 1]
-                outputs.append(float(p_fake))
-            return np.array(outputs).reshape(-1, 1)
-
-        background = np.ones((1, n))
-        query = np.ones((1, n))
-
         try:
-            explainer = shap.KernelExplainer(predict_fn, background)
-            sv = explainer.shap_values(query, nsamples=SHAP_N_SAMPLES, silent=True)
-            if isinstance(sv, list):
-                sv = sv[0]
-            sv = np.array(sv).flatten()
+            sv = _sentence_kernel_shap(model, tokenizer, sentences)
         except Exception as exc:
             log.warning(f"SHAP explain_article failed: {exc}")
             return {"top_sentences": []}
